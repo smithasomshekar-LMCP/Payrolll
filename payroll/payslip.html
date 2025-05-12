@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payslip</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #4E95D9;
+      --sidebar-bg: #2C3E50;
+      --secondary-color: #FFCCCC;
+      --accent-bg: #F7F9FB;
+      --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      --bg-light: #FFFFFF;
+      --bg-dark: #1F2A3C;
+      --text-light: #34495E;
+      --text-dark: #DDE4EB;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-light);
+      margin: 0;
+      min-height: 100vh;
+      transition: var(--transition);
+    }
+
+    body.dark-mode {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .container-fluid {
+      padding: 0;
+      height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .sidebar {
+      background-color: var(--sidebar-bg);
+      color: var(--text-dark);
+      padding: 20px 10px;
+      position: fixed;
+      height: 100%;
+      width: 250px;
+      transform: translateX(0);
+      transition: var(--transition);
+      z-index: 1000;
+    }
+
+    .sidebar h5 {
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar a {
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 5px 10px;
+      transition: var(--transition);
+    }
+
+    .sidebar a.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .sidebar a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .sidebar .nav-item {
+      margin-bottom: 10px;
+    }
+
+    .sidebar .collapse {
+      padding-left: 20px;
+    }
+
+    .header {
+      background-color: var(--accent-bg);
+      padding: 15px 20px;
+      border-bottom: 1px solid #e6ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+    }
+
+    body.dark-mode .header {
+      background-color: #34495e;
+      border-bottom: 1px solid #4b627a;
+    }
+
+    .profile-section {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--secondary-color);
+    }
+
+    .dropdown-menu {
+      right: 0;
+      left: auto;
+      background-color: var(--accent-bg);
+    }
+
+    body.dark-mode .dropdown-menu {
+      background-color: #34495e;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      transition: var(--transition);
+      background-color: var(--bg-light);
+      min-height: 100vh;
+    }
+
+    body.dark-mode .main-content {
+      background-color: var(--bg-dark);
+    }
+
+    .card {
+      background: var(--accent-bg);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      padding: 20px;
+      transition: var(--transition);
+      border: none;
+    }
+
+    body.dark-mode .card {
+      background-color: #34495e;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .payslip-header {
+      border-bottom: 1px solid #e6ecef;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+    }
+
+    body.dark-mode .payslip-header {
+      border-bottom: 1px solid #4b627a;
+    }
+
+    .table {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      background-color: var(--accent-bg);
+    }
+
+    body.dark-mode .table {
+      background-color: #34495e;
+    }
+
+    .table thead {
+      background-color: var(--primary-color);
+      color: var(--text-dark);
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+      padding: 12px;
+    }
+
+    .table tbody tr:hover {
+      background-color: #E6ECEF;
+    }
+
+    body.dark-mode .table tbody tr:hover {
+      background-color: #4b627a;
+    }
+
+    .btn-purple {
+      background-color: var(--primary-color);
+      color: var(--text-dark);
+      border-radius: 20px;
+      padding: 0 16px;
+      height: 38px;
+      transition: var(--transition);
+      border: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-purple:hover {
+      background-color: #3B7ABF;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-purple:disabled {
+      background-color: #6c757d;
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      border-radius: 20px;
+      padding: 8px 20px;
+      transition: var(--transition);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--primary-color);
+    }
+
+    .modal-content {
+      border-radius: 12px;
+      background-color: var(--accent-bg);
+    }
+
+    body.dark-mode .modal-content {
+      background-color: #34495e;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(78, 149, 217, 0.25);
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    .form-control.is-invalid {
+      border-color: #dc3545;
+    }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+
+    .employee-select {
+      max-width: 300px;
+      margin-bottom: 20px;
+      border-radius: 20px;
+      padding: 8px 20px;
+      border: 1px solid #dee2e6;
+      transition: var(--transition);
+    }
+
+    body.dark-mode .employee-select {
+      background-color: #3a3a4e;
+      color: var(--text-dark);
+      border-color: #4b627a;
+    }
+
+    .select2-container--default .select2-selection--single {
+      border-radius: 20px;
+      border: 1px solid #dee2e6;
+      padding: 6px 20px;
+      height: 38px;
+      background-color: var(--bg-light);
+      transition: var(--transition);
+    }
+
+    body.dark-mode .select2-container--default .select2-selection--single {
+      background-color: #3a3a4e;
+      border-color: #4b627a;
+      color: var(--text-dark);
+    }
+
+    .select2-container--default .select2-selection--single:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(78, 149, 217, 0.25);
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      line-height: 24px;
+      color: var(--text-light);
+    }
+
+    body.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: var(--text-dark);
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 38px;
+    }
+
+    .select2-dropdown {
+      border-color: #dee2e6;
+      background-color: var(--bg-light);
+    }
+
+    body.dark-mode .select2-dropdown {
+      background-color: #34495e;
+      border-color: #4b627a;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+      background-color: var(--primary-color);
+      color: var(--text-dark);
+    }
+
+    .loader {
+      border: 4px solid #e0e6eb;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+
+    .api-error {
+      color: #dc3545;
+      font-size: 0.9rem;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .modal[aria-hidden="true"] {
+      pointer-events: none;
+    }
+
+    .modal .btn:focus,
+    .modal .form-control:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    .modal .btn:disabled:focus {
+      outline: none;
+    }
+
+    @media (max-width: 991px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: 80%;
+        max-width: 250px;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .card {
+        padding: 15px;
+      }
+
+      .table th, .table td {
+        font-size: 0.85rem;
+        padding: 8px;
+      }
+
+      .header {
+        padding: 10px 15px;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .profile-img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .payslip-header h4 {
+        font-size: 1.25rem;
+      }
+
+      .payslip-header small {
+        font-size: 0.75rem;
+      }
+
+      .btn-purple, .btn-secondary {
+        width: 100%;
+        margin-bottom: 10px;
+        height: 38px;
+      }
+
+      .employee-select {
+        max-width: 100%;
+      }
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px 10px;
+      color: var(--primary-color);
+    }
+
+    @media (max-width: 991px) {
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    .alert-container {
+      margin-bottom: 1rem;
+    }
+
+    /* Ensure vertical alignment of select and button */
+    .d-flex.gap-2.mb-3 {
+      align-items: start;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-2 sidebar">
+        <h5 class="text-center">LAMINCAP <span style="color: var(--primary-color);">X</span> PAYROLL</h5>
+        <div class="nav-item">
+          <a href="dashboard.html" >
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+          
+        </div>
+        <div class="nav-item">
+          <a href="teachingstaff.html" data-bs-toggle="collapse" data-bs-target="#teaching-menu">
+            <i class="fas fa-chalkboard-teacher"></i> Teaching Staff
+          </a>
+          <div id="teaching-menu" class="collapse">
+            <a href="teachingstaff.html">Staff List</a>
+            <a href="teaching-payroll.html">Payroll</a>
+          </div>
+        </div>
+        <div class="nav-item">
+          <a href="nonteachingstaff.html" data-bs-toggle="collapse" data-bs-target="#nonteaching-menu">
+            <i class="fas fa-user-tie"></i> Non-Teaching Staff
+          </a>
+          <div id="nonteaching-menu" class="collapse">
+            <a href="nonteachingstaff.html">Staff List</a>
+            <a href="non-teaching-payroll.html">Payroll</a>
+          </div>
+        </div>
+        <div class="nav-item">
+                <a href="payslip.html">
+                  <i class="fas fa-file-invoice"></i> Payslip
+                </a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-md-10 main-content">
+        <div class="header">
+          <div class="d-flex align-items-center gap-2">
+            <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <i class="fas fa-bell theme-toggle" title="Notifications"></i>
+            <i class="fas fa-moon theme-toggle" id="theme-toggle" title="Toggle Theme"></i>
+            <div class="profile-section" data-bs-toggle="dropdown">
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" class="profile-img" alt="Profile" />
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" id="profile-link"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="#" id="settings-link"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a class="dropdown-item" href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4">
+          <div class="alert-container" id="alertContainer" style="display: none;"></div>
+          <div class="d-flex gap-2 mb-3">
+            <select class="form-select employee-select" id="employeeSelect">
+              <option value="">Select Employee</option>
+            </select>
+            <button class="btn btn-purple" id="addEditEmployeeBtn">Edit</button>
+          </div>
+
+          <div class="card" id="payslipBox" style="display: none;">
+            <div class="loading-container" id="payslipLoading" style="display: none;">
+              <div class="loader"></div>
+            </div>
+            <div class="api-error" id="payslipError" style="display: none;"></div>
+            <div id="payslipContent">
+              <div class="payslip-header text-center mb-4">
+                <h4 class="mb-0">LAMINCAP X PAYROLL</h4>
+                <small>123 Payroll Street, Tech City, Country</small>
+              </div>
+
+              <div class="row mb-4">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <strong>Employee Name:</strong> <span id="empName"></span><br>
+                  <strong>Employee ID:</strong> <span id="empId"></span>
+                </div>
+                <div class="col-md-6">
+                  <strong>Pay Period:</strong> <span id="payPeriod"></span><br>
+                  <strong>Worked Days:</strong> <span id="workedDays"></span>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <h6>Income</h6>
+                  <table class="table table-bordered" id="incomeTable">
+                    <thead>
+                      <tr>
+                        <th>Earnings</th>
+                        <th>Amount (₹)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Basic</td><td id="basic"></td></tr>
+                      <tr><td>HRA</td><td id="hra"></td></tr>
+                      <tr><td>DA</td><td id="da"></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="col-md-6">
+                  <h6>Deductions</h6>
+                  <table class="table table-bordered" id="deductionTable">
+                    <thead>
+                      <tr>
+                        <th>Deductions</th>
+                        <th>Amount (₹)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>LOP</td><td id="lop"></td></tr>
+                      <tr><td>Tax</td><td id="tax"></td></tr>
+                      <tr><td>EPF</td><td id="epf"></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="text-end mt-3">
+                <h5><strong>Net Payable: ₹ <span id="netPay"></span></strong></h5>
+                <button class="btn btn-purple mt-2" id="downloadPdfBtn">Download PDF</button>
+                <button class="btn btn-secondary mt-2" id="backBtn">Back</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Modal -->
+  <div class="modal fade" id="inputModal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="inputModalLabel">Edit Payslip</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="payslipForm">
+            <input type="hidden" id="employeeIndex">
+            <input type="hidden" id="employeeType">
+            <div class="mb-3">
+              <label for="inputName" class="form-label">Employee Name</label>
+              <input type="text" class="form-control" id="inputName" readonly>
+              <div class="error-message" id="nameError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputId" class="form-label">Employee ID</label>
+              <input type="text" class="form-control" id="inputId" readonly>
+              <div class="error-message" id="idError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputDepartment" class="form-label">Department</label>
+              <input type="text" class="form-control" id="inputDepartment" readonly>
+              <div class="error-message" id="departmentError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputDesignation" class="form-label">Designation</label>
+              <input type="text" class="form-control" id="inputDesignation" readonly>
+              <div class="error-message" id="designationError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputPeriod" class="form-label">Pay Period</label>
+              <input type="text" class="form-control" id="inputPeriod" required>
+              <div class="error-message" id="periodError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputDays" class="form-label">Worked Days</label>
+              <input type="text" class="form-control" id="inputDays" required>
+              <div class="error-message" id="daysError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputBasic" class="form-label">Basic Salary (₹)</label>
+              <input type="number" class="form-control" id="inputBasic" required min="0">
+              <div class="error-message" id="basicError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputHra" class="form-label">HRA (₹)</label>
+              <input type="number" class="form-control" id="inputHra" required min="0">
+              <div class="error-message" id="hraError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputDa" class="form-label">DA (₹)</label>
+              <input type="number" class="form-control" id="inputDa" required min="0">
+              <div class="error-message" id="daError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputLop" class="form-label">LOP (₹)</label>
+              <input type="number" class="form-control" id="inputLop" required min="0">
+              <div class="error-message" id="lopError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputTax" class="form-label">Tax (₹)</label>
+              <input type="number" class="form-control" id="inputTax" required min="0">
+              <div class="error-message" id="taxError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputEpf" class="form-label">EPF (₹)</label>
+              <input type="number" class="form-control" id="inputEpf" required min="0">
+              <div class="error-message" id="epfError"></div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-purple" id="savePayslip">Save Payslip</button>
+          <button type="button" class="btn btn-danger" id="deletePayslip" style="display: none;">Delete Payslip</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    // Focus Trap Utility
+    function trapFocus(modalElement) {
+      const focusableElements = modalElement.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      modalElement.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          if (e.shiftKey) {
+            if (document.activeElement === firstFocusable) {
+              e.preventDefault();
+              lastFocusable.focus();
+            }
+          } else {
+            if (document.activeElement === lastFocusable) {
+              e.preventDefault();
+              firstFocusable.focus();
+            }
+          }
+        }
+      });
+
+      return firstFocusable;
+    }
+
+    // Disable Focusable Elements
+    function disableFocusableElements(modalElement) {
+      const focusableElements = modalElement.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      focusableElements.forEach(el => {
+        el.setAttribute('tabindex', '-1');
+      });
+    }
+
+    // Enable Focusable Elements
+    function enableFocusableElements(modalElement) {
+      const focusableElements = modalElement.querySelectorAll('[tabindex="-1"]');
+      focusableElements.forEach(el => {
+        el.removeAttribute('tabindex');
+      });
+    }
+
+    // Sidebar Toggle
+    function initializeSidebar() {
+      const menuToggle = document.querySelector('.menu-toggle');
+      const sidebar = document.querySelector('.sidebar');
+
+      if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+          if (window.innerWidth <= 991 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+            sidebar.classList.remove('active');
+          }
+        });
+
+        document.querySelectorAll('.sidebar a').forEach(link => {
+          link.addEventListener('click', (e) => {
+            if (!link.getAttribute('data-bs-toggle')) {
+              document.querySelectorAll('.sidebar a.active').forEach(activeLink => activeLink.classList.remove('active'));
+              link.classList.add('active');
+              if (link.parentElement.classList.contains('collapse')) {
+                link.closest('.nav-item').querySelector('a[data-bs-toggle="collapse"]').classList.add('active');
+              }
+            }
+          });
+        });
+      }
+    }
+
+    // Back Button
+    function initializeBackButton() {
+      const backBtn = document.querySelector('#backBtn');
+      if (backBtn) {
+        backBtn.addEventListener('click', () => {
+          window.location.href = 'dashboard.html';
+        });
+      }
+    }
+
+    // Theme Toggle
+    function initializeThemeToggle() {
+      const themeToggle = document.getElementById('theme-toggle');
+      const body = document.body;
+      if (themeToggle && body) {
+        themeToggle.addEventListener('click', () => {
+          body.classList.toggle('dark-mode');
+          themeToggle.classList.toggle('fa-moon');
+          themeToggle.classList.toggle('fa-sun');
+          localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+        });
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+          body.classList.add('dark-mode');
+          themeToggle.classList.remove('fa-moon');
+          themeToggle.classList.add('fa-sun');
+        }
+      }
+    }
+
+    // PDF Download
+    function initializePDFDownload() {
+      const { jsPDF } = window.jspdf;
+      const downloadBtn = document.getElementById('downloadPdfBtn');
+      if (downloadBtn && jsPDF && window.html2canvas) {
+        downloadBtn.addEventListener('click', async () => {
+          try {
+            downloadBtn.disabled = true;
+            const payslipContent = document.getElementById('payslipContent');
+            if (!payslipContent) throw new Error('Payslip content not found');
+            const canvas = await html2canvas(payslipContent, {
+              scale: 2,
+              useCORS: true,
+              logging: false
+            });
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdf = new jsPDF({
+              orientation: 'portrait',
+              unit: 'mm',
+              format: 'a4'
+            });
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`payslip_${document.getElementById('empId').textContent || 'unknown'}.pdf`);
+          } catch (error) {
+            console.error('Error generating PDF:', error);
+            alert('Failed to generate PDF. Please try again.');
+          } finally {
+            downloadBtn.disabled = false;
+          }
+        });
+      }
+    }
+
+    // Employee Management
+    function initializeEmployeeManagement() {
+      const employeeSelect = document.getElementById('employeeSelect');
+      const payslipBox = document.getElementById('payslipBox');
+      const payslipLoading = document.getElementById('payslipLoading');
+      const payslipError = document.getElementById('payslipError');
+      const payslipContent = document.getElementById('payslipContent');
+      const form = document.getElementById('payslipForm');
+      const saveBtn = document.getElementById('savePayslip');
+      const deleteBtn = document.getElementById('deletePayslip');
+      const modal = document.getElementById('inputModal');
+      const modalBs = new bootstrap.Modal(modal);
+      const modalTitle = document.getElementById('inputModalLabel');
+      const addEditEmployeeBtn = document.getElementById('addEditEmployeeBtn');
+      const alertContainer = document.getElementById('alertContainer');
+      let lastFocusedElement = null;
+
+      const inputs = {
+        index: document.getElementById('employeeIndex'),
+        type: document.getElementById('employeeType'),
+        name: document.getElementById('inputName'),
+        id: document.getElementById('inputId'),
+        department: document.getElementById('inputDepartment'),
+        designation: document.getElementById('inputDesignation'),
+        period: document.getElementById('inputPeriod'),
+        days: document.getElementById('inputDays'),
+        basic: document.getElementById('inputBasic'),
+        hra: document.getElementById('inputHra'),
+        da: document.getElementById('inputDa'),
+        lop: document.getElementById('inputLop'),
+        tax: document.getElementById('inputTax'),
+        epf: document.getElementById('inputEpf')
+      };
+
+      if (!employeeSelect || !payslipBox || !payslipLoading || !payslipError || !payslipContent || !form || !saveBtn || !deleteBtn || !modal || !modalTitle || !addEditEmployeeBtn || !alertContainer) {
+        console.error('One or more required DOM elements are missing');
+        payslipError.textContent = 'Page initialization failed. Please refresh.';
+        payslipError.style.display = 'block';
+        return;
+      }
+
+      function getAllEmployees() {
+        try {
+          const teaching = JSON.parse(localStorage.getItem('teachingEmployees') || '[]');
+          const nonTeaching = JSON.parse(localStorage.getItem('nonTeachingEmployees') || '[]');
+          return [...teaching, ...nonTeaching];
+        } catch (error) {
+          console.error('Error fetching employees from localStorage:', error);
+          return [];
+        }
+      }
+
+      function savePayslip(employeeId, payslipData) {
+        try {
+          const payslips = JSON.parse(localStorage.getItem('payslips') || '{}');
+          payslips[employeeId] = payslipData;
+          localStorage.setItem('payslips', JSON.stringify(payslips));
+        } catch (error) {
+          console.error('Error saving payslip to localStorage:', error);
+        }
+      }
+
+      function deletePayslip(employeeId) {
+        try {
+          const payslips = JSON.parse(localStorage.getItem('payslips') || '{}');
+          delete payslips[employeeId];
+          localStorage.setItem('payslips', JSON.stringify(payslips));
+        } catch (error) {
+          console.error('Error deleting payslip from localStorage:', error);
+        }
+      }
+
+      async function populateEmployeeSelect() {
+        try {
+          employeeSelect.disabled = true;
+          const employees = getAllEmployees();
+          $(employeeSelect).empty().append('<option value="">Select Employee</option>');
+          employees.forEach(emp => {
+            if (emp.id && emp.name && emp.type) {
+              $(employeeSelect).append(
+                `<option value="${emp.id}|${emp.type}">${emp.name} (${emp.type === 'teaching' ? 'Teaching' : 'Non-Teaching'})</option>`
+              );
+            }
+          });
+          if (employees.length === 0) {
+            $(employeeSelect).empty().append('<option value="">No Employees Found</option>');
+          }
+        } catch (error) {
+          console.error('Error populating employee select:', error);
+          $(employeeSelect).empty().append('<option value="">Error loading employees</option>');
+          payslipError.textContent = 'Failed to load employees. Please try again.';
+          payslipError.style.display = 'block';
+        } finally {
+          employeeSelect.disabled = false;
+          $(employeeSelect).select2({
+            placeholder: 'Search Employee by Name',
+            allowClear: true,
+            width: '100%',
+            dropdownCssClass: document.body.classList.contains('dark-mode') ? 'dark-mode' : ''
+          });
+        }
+      }
+
+      function validateInputs() {
+        let isValid = true;
+        Object.entries(inputs).forEach(([key, input]) => {
+          if (['index', 'type', 'id', 'name', 'department', 'designation'].includes(key)) return;
+          const errorDiv = document.getElementById(`${key}Error`);
+          if (!input.value) {
+            input.classList.add('is-invalid');
+            errorDiv.textContent = 'This field is required';
+            isValid = false;
+          } else if (['basic', 'hra', 'da', 'lop', 'tax', 'epf'].includes(key) && parseFloat(input.value) < 0) {
+            input.classList.add('is-invalid');
+            errorDiv.textContent = 'Value cannot be negative';
+            isValid = false;
+          } else {
+            input.classList.remove('is-invalid');
+            errorDiv.textContent = '';
+          }
+        });
+        return isValid;
+      }
+
+      async function updatePayslip(employeeId, employeeType) {
+        try {
+          payslipBox.style.display = 'block';
+          payslipLoading.style.display = 'flex';
+          payslipError.style.display = 'none';
+          payslipContent.style.display = 'none';
+
+          const storageKey = employeeType === 'teaching' ? 'teachingEmployees' : 'nonTeachingEmployees';
+          const employees = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          const employee = employees.find(emp => emp.id === employeeId);
+
+          if (!employee) {
+            throw new Error('Employee not found');
+          }
+
+          const salary = parseFloat(employee.salary) || 0;
+          const payslip = {
+            name: employee.name || 'N/A',
+            id: employee.id || 'N/A',
+            department: employee.department || 'N/A',
+            designation: employee.designation || 'N/A',
+            period: 'April 2025',
+            days: '28/30',
+            basic: salary ? Math.round(salary * 0.5) : 0,
+            hra: salary ? Math.round(salary * 0.3) : 0,
+            da: salary ? Math.round(salary * 0.2) : 0,
+            lop: 0,
+            tax: salary ? Math.round(salary * 0.1) : 0,
+            epf: salary ? Math.round(salary * 0.12) : 0
+          };
+
+          const payslips = JSON.parse(localStorage.getItem('payslips') || '{}');
+          if (payslips[employee.id]) {
+            Object.assign(payslip, payslips[employee.id]);
+          }
+
+          payslipContent.style.display = 'block';
+          document.getElementById('empName').textContent = payslip.name;
+          document.getElementById('empId').textContent = payslip.id;
+          document.getElementById('payPeriod').textContent = payslip.period;
+          document.getElementById('workedDays').textContent = payslip.days;
+          document.getElementById('basic').textContent = payslip.basic ? payslip.basic.toLocaleString('en-IN') : '0';
+          document.getElementById('hra').textContent = payslip.hra ? payslip.hra.toLocaleString('en-IN') : '0';
+          document.getElementById('da').textContent = payslip.da ? payslip.da.toLocaleString('en-IN') : '0';
+          document.getElementById('lop').textContent = payslip.lop ? payslip.lop.toLocaleString('en-IN') : '0';
+          document.getElementById('tax').textContent = payslip.tax ? payslip.tax.toLocaleString('en-IN') : '0';
+          document.getElementById('epf').textContent = payslip.epf ? payslip.epf.toLocaleString('en-IN') : '0';
+
+          const totalIncome = (payslip.basic || 0) + (payslip.hra || 0) + (payslip.da || 0);
+          const totalDeductions = (payslip.lop || 0) + (payslip.tax || 0) + (payslip.epf || 0);
+          const netPay = totalIncome - totalDeductions;
+          document.getElementById('netPay').textContent = netPay.toLocaleString('en-IN');
+        } catch (error) {
+          console.error('Error updating payslip:', error);
+          payslipError.textContent = 'Failed to load payslip. Please try again.';
+          payslipError.style.display = 'block';
+          payslipContent.style.display = 'none';
+          payslipBox.style.display = 'none';
+        } finally {
+          payslipLoading.style.display = 'none';
+        }
+      }
+
+      function clearForm() {
+        try {
+          form.reset();
+          inputs.index.value = '';
+          inputs.type.value = '';
+          inputs.name.value = '';
+          inputs.id.value = '';
+          inputs.department.value = '';
+          inputs.designation.value = '';
+          inputs.period.value = '';
+          inputs.days.value = '';
+          inputs.basic.value = '';
+          inputs.hra.value = '';
+          inputs.da.value = '';
+          inputs.lop.value = '';
+          inputs.tax.value = '';
+          inputs.epf.value = '';
+          Object.values(inputs).forEach(input => input.classList.remove('is-invalid'));
+          Object.keys(inputs).forEach(key => {
+            document.getElementById(`${key}Error`).textContent = '';
+          });
+          modalTitle.textContent = 'Edit Payslip';
+          deleteBtn.style.display = 'none';
+        } catch (error) {
+          console.error('Error clearing form:', error);
+        }
+      }
+
+      function populateForm(employee, type) {
+        try {
+          inputs.index.value = employee.id || '';
+          inputs.type.value = type || '';
+          inputs.name.value = employee.name || '';
+          inputs.id.value = employee.id || '';
+          inputs.department.value = employee.department || '';
+          inputs.designation.value = employee.designation || '';
+          const payslips = JSON.parse(localStorage.getItem('payslips') || '{}');
+          const payslip = payslips[employee.id] || {};
+          inputs.period.value = payslip.period || 'April 2025';
+          inputs.days.value = payslip.days || '28/30';
+          inputs.basic.value = payslip.basic || (employee.salary ? Math.round(employee.salary * 0.5) : 0);
+          inputs.hra.value = payslip.hra || (employee.salary ? Math.round(employee.salary * 0.3) : 0);
+          inputs.da.value = payslip.da || (employee.salary ? Math.round(employee.salary * 0.2) : 0);
+          inputs.lop.value = payslip.lop || 0;
+          inputs.tax.value = payslip.tax || (employee.salary ? Math.round(employee.salary * 0.1) : 0);
+          inputs.epf.value = payslip.epf || (employee.salary ? Math.round(employee.salary * 0.12) : 0);
+          modalTitle.textContent = 'Edit Payslip';
+          deleteBtn.style.display = payslips[employee.id] ? 'inline-block' : 'none';
+        } catch (error) {
+          console.error('Error populating form:', error);
+        }
+      }
+
+      function showAlert(message) {
+        alertContainer.innerHTML = `
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        `;
+        alertContainer.style.display = 'block';
+        setTimeout(() => {
+          alertContainer.style.display = 'none';
+          alertContainer.innerHTML = '';
+        }, 5000);
+      }
+
+      $(employeeSelect).on('change', async () => {
+        try {
+          const value = $(employeeSelect).val();
+          if (value) {
+            const [employeeId, employeeType] = value.split('|');
+            const storageKey = employeeType === 'teaching' ? 'teachingEmployees' : 'nonTeachingEmployees';
+            const employees = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const employee = employees.find(emp => emp.id === employeeId);
+            if (employee) {
+              await updatePayslip(employeeId, employeeType);
+            } else {
+              payslipError.textContent = 'Employee not found.';
+              payslipError.style.display = 'block';
+              payslipBox.style.display = 'none';
+            }
+          } else {
+            payslipBox.style.display = 'none';
+            payslipError.style.display = 'none';
+          }
+        } catch (error) {
+          console.error('Error handling employee select change:', error);
+          payslipError.textContent = 'Failed to load payslip. Please try again.';
+          payslipError.style.display = 'block';
+          payslipBox.style.display = 'none';
+        }
+      });
+
+      addEditEmployeeBtn.addEventListener('click', () => {
+        try {
+          const value = $(employeeSelect).val();
+          if (!value) {
+            showAlert('Please select an employee to edit.');
+            return;
+          }
+          lastFocusedElement = document.activeElement;
+          const [employeeId, employeeType] = value.split('|');
+          const storageKey = employeeType === 'teaching' ? 'teachingEmployees' : 'nonTeachingEmployees';
+          const employees = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          const employee = employees.find(emp => emp.id === employeeId);
+          if (employee) {
+            clearForm();
+            populateForm(employee, employeeType);
+            disableFocusableElements(document.body);
+            modalBs.show();
+            const firstFocusable = trapFocus(modal);
+            firstFocusable.focus();
+          } else {
+            showAlert('Employee not found. Please select a valid employee.');
+          }
+        } catch (error) {
+          console.error('Error opening edit modal:', error);
+          showAlert('Failed to open edit modal. Please try again.');
+        }
+      });
+
+      modal.addEventListener('shown.bs.modal', () => {
+        const firstFocusable = trapFocus(modal);
+        firstFocusable.focus();
+      });
+
+      modal.addEventListener('hidden.bs.modal', () => {
+        enableFocusableElements(document.body);
+        if (lastFocusedElement) {
+          lastFocusedElement.focus();
+          lastFocusedElement = null;
+        }
+      });
+
+      saveBtn.addEventListener('click', async () => {
+        try {
+          if (!validateInputs()) return;
+          saveBtn.disabled = true;
+          const employeeId = inputs.id.value;
+          const employeeType = inputs.type.value;
+          if (!employeeId || !employeeType) {
+            payslipError.textContent = 'Please select an employee first.';
+            payslipError.style.display = 'block';
+            return;
+          }
+          const payslipData = {
+            period: inputs.period.value,
+            days: inputs.days.value,
+            basic: parseFloat(inputs.basic.value) || 0,
+            hra: parseFloat(inputs.hra.value) || 0,
+            da: parseFloat(inputs.da.value) || 0,
+            lop: parseFloat(inputs.lop.value) || 0,
+            tax: parseFloat(inputs.tax.value) || 0,
+            epf: parseFloat(inputs.epf.value) || 0
+          };
+          savePayslip(employeeId, payslipData);
+          modalBs.hide();
+          $(employeeSelect).val(`${employeeId}|${employeeType}`).trigger('change');
+        } catch (error) {
+          console.error('Error saving payslip:', error);
+          payslipError.textContent = 'Failed to save payslip. Please try again.';
+          payslipError.style.display = 'block';
+        } finally {
+          saveBtn.disabled = false;
+        }
+      });
+
+      deleteBtn.addEventListener('click', async () => {
+        try {
+          if (confirm('Are you sure you want to delete this payslip?')) {
+            deleteBtn.disabled = true;
+            const employeeId = inputs.id.value;
+            const employeeType = inputs.type.value;
+            if (!employeeId || !employeeType) {
+              payslipError.textContent = 'Please select an employee first.';
+              payslipError.style.display = 'block';
+              return;
+            }
+            deletePayslip(employeeId);
+            modalBs.hide();
+            payslipBox.style.display = 'none';
+            $(employeeSelect).val('').trigger('change');
+          }
+        } catch (error) {
+          console.error('Error deleting payslip:', error);
+          payslipError.textContent = 'Failed to delete payslip. Please try again.';
+          payslipError.style.display = 'block';
+        } finally {
+          deleteBtn.disabled = false;
+        }
+      });
+
+      employeeSelect.addEventListener('focus', async () => {
+        await populateEmployeeSelect();
+      });
+
+      document.querySelectorAll('#payslipForm input').forEach(input => {
+        input.addEventListener('input', () => {
+          input.classList.remove('is-invalid');
+          document.getElementById(`${input.id.replace('input', '').toLowerCase()}Error`).textContent = '';
+        });
+      });
+
+      // Initialize employee select on page load
+      populateEmployeeSelect();
+    }
+
+    // Initialize all functionalities
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        initializeSidebar();
+        initializeBackButton();
+        initializeThemeToggle();
+        initializePDFDownload();
+        initializeEmployeeManagement();
+      } catch (error) {
+        console.error('Error initializing page:', error);
+        const errorDiv = document.getElementById('payslipError');
+        if (errorDiv) {
+          errorDiv.textContent = 'Failed to initialize page. Please refresh and try again.';
+          errorDiv.style.display = 'block';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

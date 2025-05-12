@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Non-Teaching Staff Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #4E95D9;
+      --sidebar-bg: #2C3E50;
+      --secondary-color: #FFCCCC;
+      --accent-bg: #F7F9FB;
+      --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      --bg-light: #FFFFFF;
+      --bg-dark: #1F2A3C;
+      --text-light: #34495E;
+      --text-dark: #DDE4EB;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-light);
+      margin: 0;
+      min-height: 100vh;
+      transition: var(--transition);
+    }
+
+    body.dark-mode {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .container-fluid {
+      padding: 0;
+      height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .sidebar {
+      background-color: var(--sidebar-bg);
+      color: var(--text-dark);
+      padding: 20px 10px;
+      position: fixed;
+      height: 100%;
+      width: 250px;
+      transform: translateX(0);
+      transition: var(--transition);
+      z-index: 1000;
+    }
+
+    .sidebar h5 {
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar a {
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 5px 10px;
+      transition: var(--transition);
+    }
+
+    .sidebar a.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .sidebar a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .sidebar .nav-item {
+      margin-bottom: 10px;
+    }
+
+    .sidebar .collapse {
+      padding-left: 20px;
+    }
+
+    .header {
+      background-color: var(--accent-bg);
+      padding: 15px 20px;
+      border-bottom: 1px solid #e6ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+    }
+
+    body.dark-mode .header {
+      background-color: #34495e;
+      border-bottom: 1px solid #4b627a;
+    }
+
+    .header .search-container {
+      position: relative;
+      max-width: 300px;
+      width: 100%;
+    }
+
+    .header .search-container input {
+      border-radius: 20px;
+      padding-left: 40px;
+      border: 1px solid #dee2e6;
+      transition: var(--transition);
+    }
+
+    .header .search-container input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(78, 149, 217, 0.25);
+      background-color: white;
+    }
+
+    .header .search-container::before {
+      content: '\f002';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    /* Improved header right-side alignment */
+    .header .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px; /* Reduced from 15px to prevent wrapping */
+      flex-wrap: nowrap;
+    }
+
+    .profile-section {
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px; /* Consistent spacing between name and image */
+    }
+
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--secondary-color);
+    }
+
+    .dropdown-menu {
+      right: 0;
+      left: auto;
+      background-color: var(--accent-bg);
+    }
+
+    body.dark-mode .dropdown-menu {
+      background-color: #34495e;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      transition: var(--transition);
+      background-color: var(--bg-light);
+      min-height: 100vh;
+    }
+
+    body.dark-mode .main-content {
+      background-color: var(--bg-dark);
+    }
+
+    .filter-box {
+      background: var(--accent-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    body.dark-mode .filter-box {
+      background-color: #34495e;
+    }
+
+    .filter-box .filter-group {
+      display: flex;
+      gap: 10px; /* Reduced from 15px for tighter alignment */
+      flex-wrap: wrap;
+      align-items: center;
+      flex: 1; /* Ensure filter group takes available space */
+    }
+
+    .filter-box select, .filter-box input {
+      border-radius: 20px;
+      font-size: 0.9rem;
+      padding: 8px 20px;
+      border: 1px solid #dee2e6;
+      transition: var(--transition);
+      flex: 1; /* Equal widths for inputs/selects */
+      min-width: 100px; /* Reduced from 120px for smaller screens */
+      max-width: 200px; /* Prevent overly wide inputs */
+    }
+
+    .filter-box select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l-6-6h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 12px;
+    }
+
+    .filter-box select:focus, .filter-box input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(78, 149, 217, 0.25);
+      background-color: white;
+    }
+
+    body.dark-mode .filter-box select, body.dark-mode .filter-box input {
+      background-color: #3a3a4e;
+      color: var(--text-dark);
+      border-color: #4b627a;
+    }
+
+    .btn-purple {
+      background-color: var(--primary-color);
+      color: var(--text-dark);
+      border-radius: 20px;
+      padding: 8px 24px;
+      border: none;
+      transition: var(--transition);
+      font-weight: 500;
+      white-space: nowrap; /* Prevent button text wrapping */
+    }
+
+    .btn-purple:hover {
+      background-color: #3B7ABF;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .table {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      background-color: var(--accent-bg);
+    }
+
+    body.dark-mode .table {
+      background-color: #34495e;
+    }
+
+    .table thead {
+      background-color: var(--primary-color);
+      color: var(--text-dark);
+    }
+
+    .table tbody tr {
+      transition: var(--transition);
+    }
+
+    .table tbody tr:hover {
+      background-color: #E6ECEF;
+    }
+
+    body.dark-mode .table tbody tr:hover {
+      background-color: #4b627a;
+    }
+
+    .table img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Set minimum column widths for better alignment */
+    .table th:nth-child(1), .table td:nth-child(1) { /* Employee ID */
+      min-width: 100px;
+    }
+    .table th:nth-child(2), .table td:nth-child(2) { /* Profile */
+      min-width: 60px;
+      text-align: center;
+    }
+    .table th:nth-child(3), .table td:nth-child(3) { /* Employee Name */
+      min-width: 150px;
+    }
+    .table th:nth-child(4), .table td:nth-child(4) { /* Department */
+      min-width: 100px;
+    }
+    .table th:nth-child(5), .table td:nth-child(5) { /* Designation */
+      min-width: 150px;
+    }
+    .table th:nth-child(6), .table td:nth-child(6) { /* Salary */
+      min-width: 100px;
+    }
+    .table th:nth-child(7), .table td:nth-child(7) { /* Hire Date */
+      min-width: 100px;
+    }
+    .table th:nth-child(8), .table td:nth-child(8) { /* Actions */
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .eye-icon, .remove-icon {
+      background-color: var(--primary-color);
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-block;
+      margin: 0 5px;
+    }
+
+    .eye-icon:hover, .remove-icon:hover {
+      background-color: #3B7ABF;
+      transform: scale(1.1);
+    }
+
+    .modal-content {
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      background-color: var(--accent-bg);
+    }
+
+    body.dark-mode .modal-content {
+      background-color: #34495e;
+    }
+
+    .modal-header {
+      background-color: var(--primary-color);
+      color: var(--text-dark);
+      border-radius: 12px 12px 0 0;
+    }
+
+    .modal-body {
+      padding: 20px; /* Increased padding for better spacing */
+    }
+
+    .modal-footer .btn-purple {
+      margin: 0;
+    }
+
+    .loader {
+      border: 4px solid #e0e6eb;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--primary-color);
+    }
+
+    /* Flatpickr Styles */
+    .flatpickr-calendar {
+      background: var(--accent-bg);
+      box-shadow: var(--card-shadow);
+      border-radius: 8px;
+    }
+
+    body.dark-mode .flatpickr-calendar {
+      background: #34495e;
+      color: var(--text-dark);
+    }
+
+    .flatpickr-monthDropdown-months,
+    .flatpickr-current-month .flatpickr-monthDropdown-month,
+    .flatpickr-current-month input.cur-year {
+      color: var(--text-light);
+    }
+
+    body.dark-mode .flatpickr-monthDropdown-months,
+    body.dark-mode .flatpickr-current-month .flatpickr-monthDropdown-month,
+    body.dark-mode .flatpickr-current-month input.cur-year {
+      color: var(--text-dark);
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange,
+    .flatpickr-day.selected:hover,
+    .flatpickr-day.startRange:hover,
+    .flatpickr-day.endRange:hover {
+      background: var(--primary-color);
+      color: var(--text-dark);
+      border-color: var(--primary-color);
+    }
+
+    .flatpickr-day.today {
+      border-color: var(--primary-color);
+    }
+
+    .flatpickr-day:hover {
+      background: #E6ECEF;
+    }
+
+    body.dark-mode .flatpickr-day:hover {
+      background: #4b627a;
+    }
+
+    @media (max-width: 991px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: 80%;
+        max-width: 250px;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .filter-box {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-box .filter-group {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px; /* Reduced for smaller screens */
+        justify-content: center;
+      }
+
+      .filter-box select, .filter-box input {
+        max-width: none; /* Allow full width on smaller screens */
+      }
+
+      .header .search-container {
+        max-width: 200px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .table-responsive {
+        margin: 0 -10px;
+      }
+
+      .filter-box select, .filter-box input {
+        font-size: 0.85rem;
+        padding: 6px 16px;
+      }
+
+      .header {
+        padding: 10px 15px;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .header .search-container {
+        max-width: 150px;
+      }
+
+      .header .search-container input {
+        font-size: 0.85rem;
+      }
+
+      .profile-img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .filter-box {
+        padding: 15px;
+      }
+
+      .btn-purple {
+        width: 100%;
+        margin: 5px 0;
+      }
+
+      .table img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .filter-box .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px; /* Consistent vertical spacing */
+      }
+
+      .filter-box select, .filter-box input {
+        width: 100%;
+        max-width: none;
+      }
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px 10px;
+      color: var(--primary-color);
+    }
+
+    @media (max-width: 991px) {
+      .menu-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2 sidebar">
+        <h5 class="text-center">LAMINCAP <span style="color: var(--primary-color);">X</span> PAYROLL</h5>
+        <div class="nav-item">
+          <a href="dashboard.html" >
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+          
+        </div>
+        <div class="nav-item">
+          <a href="teachingstaff.html" data-bs-toggle="collapse" data-bs-target="#teaching-menu">
+            <i class="fas fa-chalkboard-teacher"></i> Teaching Staff
+          </a>
+          <div id="teaching-menu" class="collapse">
+            <a href="teachingstaff.html">Staff List</a>
+            <a href="teaching-payroll.html">Payroll</a>
+          </div>
+        </div>
+        <div class="nav-item">
+          <a href="nonteachingstaff.html" class="active" data-bs-toggle="collapse" data-bs-target="#nonteaching-menu">
+            <i class="fas fa-user-tie"></i> Non-Teaching Staff
+          </a>
+          <div id="nonteaching-menu" class="collapse show">
+            <a href="nonteachingstaff.html">Staff List</a>
+            <a href="non-teaching-payroll.html">Payroll</a>
+          </div>
+        </div>
+            <div class="nav-item">
+      <a href="payslip.html">
+        <i class="fas fa-file-invoice"></i> Payslip
+      </a>
+</div>
+      </div>
+
+      <div class="col-md-10 main-content">
+        <div class="header">
+          <div class="d-flex align-items-center gap-2">
+            <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+            <div class="search-container">
+              <input type="text" class="form-control" placeholder="Search Employee name/ID" id="searchInput">
+            </div>
+          </div>
+          <div class="header-right">
+            <i class="fas fa-bell theme-toggle" title="Notifications"></i>
+            <i class="fas fa-moon theme-toggle" id="theme-toggle" title="Toggle Theme"></i>
+            <div class="profile-section" data-bs-toggle="dropdown">
+              <span>Admin Name</span>
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" class="profile-img" alt="Profile" />
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" id="profile-link"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="#" id="settings-link"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a class="dropdown-item" href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-wrapper p-4">
+          <div class="filter-box">
+            <div class="filter-group">
+              <select class="form-select" id="departmentFilter">
+                <option value="">All Departments</option>
+              </select>
+              <select class="form-select" id="designationFilter">
+                <option value="">All Designations</option>
+              </select>
+              <input type="text" class="form-control" id="dateFilter" placeholder="Select Hire Month/Year">
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">Add Employee</button>
+              <button class="btn btn-purple" onclick="downloadEmployees()">Download</button>
+            </div>
+          </div>
+
+          <h6 class="mb-3">Employees List</h6>
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle" id="employeeTable">
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Profile</th>
+                  <th>Employee Name</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Salary</th>
+                  <th>Hire Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addEmployeeModalLabel">Add New Employee</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addEmployeeForm">
+            <div class="mb-3">
+              <label for="employeeId" class="form-label">Employee ID</label>
+              <input type="text" class="form-control" id="employeeId" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="employeeName" class="form-label">Employee Name</label>
+              <input type="text" class="form-control" id="employeeName" required>
+            </div>
+            <div class="mb-3">
+              <label for="employeeDepartment" class="form-label">Department</label>
+              <select class="form-select" id="employeeDepartment" required></select>
+            </div>
+            <div class="mb-3">
+              <label for="employeeDesignation" class="form-label">Designation</label>
+              <select class="form-select" id="employeeDesignation" required></select>
+            </div>
+            <div class="mb-3">
+              <label for="employeeSalary" class="form-label">Salary (₹)</label>
+              <input type="number" class="form-control" id="employeeSalary" required>
+            </div>
+            <div class="mb-3">
+              <label for="employeeHireDate" class="form-label">Hire Date</label>
+              <input type="date" class="form-control" id="employeeHireDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="employeeProfilePic" class="form-label">Profile Picture</label>
+              <input type="file" class="form-control" id="employeeProfilePic" accept="image/*">
+              <div class="text-center mt-2">
+                <img id="profilePicPreview" src="#" alt="Profile Preview" style="display: none; width: 100px; height: 100px; border-radius: 50%;">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-purple" onclick="addEmployee()">Add Employee</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="viewEmployeeModal" tabindex="-1" aria-labelledby="viewEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewEmployeeModalLabel">Employee Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-3">
+            <img id="viewProfilePic" src="#" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--secondary-color);">
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Employee ID</strong></label>
+            <p id="viewEmployeeId"></p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Name</strong></label>
+            <p id="viewEmployeeName"></p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Department</strong></label>
+            <p id="viewEmployeeDepartment"></p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Designation</strong></label>
+            <p id="viewEmployeeDesignation"></p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Salary</strong></label>
+            <p id="viewEmployeeSalary"></p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Hire Date</strong></label>
+            <p id="viewEmployeeHireDate"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const config = {
+      departments: ['Admin', 'Accounts', 'Maintenance'],
+      designations: ['Clerk', 'Peon', 'Cleaner']
+    };
+
+    let employees = [];
+
+    function initializeStorage() {
+      try {
+        if (!localStorage.getItem('nonTeachingEmployees')) {
+          localStorage.setItem('nonTeachingEmployees', JSON.stringify([]));
+        }
+        employees = JSON.parse(localStorage.getItem('nonTeachingEmployees') || '[]');
+      } catch (error) {
+        console.error('Error initializing localStorage:', error);
+        employees = [];
+      }
+    }
+
+    function saveEmployees() {
+      try {
+        localStorage.setItem('nonTeachingEmployees', JSON.stringify(employees));
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+      }
+    }
+
+    function initializeDropdowns() {
+      const departmentFilter = document.getElementById('departmentFilter');
+      const designationFilter = document.getElementById('designationFilter');
+      const employeeDepartment = document.getElementById('employeeDepartment');
+      const employeeDesignation = document.getElementById('employeeDesignation');
+
+      config.departments.forEach(dept => {
+        departmentFilter.innerHTML += `<option value="${dept}">${dept}</option>`;
+        employeeDepartment.innerHTML += `<option value="${dept}">${dept}</option>`;
+      });
+
+      config.designations.forEach(design => {
+        designationFilter.innerHTML += `<option value="${design}">${design}</option>`;
+        employeeDesignation.innerHTML += `<option value="${design}">${design}</option>`;
+      });
+    }
+
+    function initializeDatePicker() {
+      flatpickr('#dateFilter', {
+        dateFormat: 'Y-m',
+        altInput: true,
+        altFormat: 'F Y',
+        mode: 'single',
+        static: true,
+        onChange: () => {
+          filterEmployees();
+        }
+      });
+    }
+
+    function generateEmployeeId() {
+      const nonTeaching = JSON.parse(localStorage.getItem('nonTeachingEmployees') || '[]');
+      const maxId = nonTeaching.length > 0 ? Math.max(...nonTeaching.map(emp => parseInt(emp.id.replace('EMP', '')))) : 0;
+      return `EMP${String(maxId + 1).padStart(3, '0')}`;
+    }
+
+    function initializeSidebar() {
+      const menuToggle = document.querySelector('.menu-toggle');
+      const sidebar = document.querySelector('.sidebar');
+
+      menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 991 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+          sidebar.classList.remove('active');
+        }
+      });
+
+      document.querySelectorAll('.sidebar a').forEach(link => {
+        link.addEventListener('click', (e) => {
+          if (!link.getAttribute('data-bs-toggle')) {
+            document.querySelector('.sidebar a.active')?.classList.remove('active');
+            link.classList.add('active');
+          }
+        });
+      });
+    }
+
+    function filterEmployees() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const department = document.getElementById('departmentFilter').value;
+      const designation = document.getElementById('designationFilter').value; // Fixed typo
+      const dateFilter = document.getElementById('dateFilter').value;
+
+      const filteredEmployees = employees.filter(employee => {
+        const hireDate = new Date(employee.hireDate);
+        const hireMonthYear = `${hireDate.getFullYear()}-${String(hireDate.getMonth() + 1).padStart(2, '0')}`;
+
+        return (
+          (search === '' || employee.name.toLowerCase().includes(search) || employee.id.toLowerCase().includes(search)) &&
+          (department === '' || employee.department === department) &&
+          (designation === '' || employee.designation === designation) &&
+          (dateFilter === '' || hireMonthYear === dateFilter)
+        );
+      });
+
+      renderTable(filteredEmployees);
+    }
+
+    function renderTable(data) {
+      const tbody = document.querySelector('#employeeTable tbody');
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center"><div class="loader"></div></td></tr>';
+      setTimeout(() => {
+        tbody.innerHTML = '';
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center">No employees found</td></tr>';
+          return;
+        }
+        data.forEach(employee => {
+          const row = document.createElement('tr');
+          const hireDate = new Date(employee.hireDate).toLocaleDateString('en-IN');
+          row.innerHTML = `
+            <td>${employee.id}</td>
+            <td><img src="${employee.profilePic}" alt="Profile"></td>
+            <td>${employee.name}</td>
+            <td>${employee.department}</td>
+            <td>${employee.designation}</td>
+            <td>₹ ${employee.salary.toLocaleString('en-IN')}</td>
+            <td>${hireDate}</td>
+            <td>
+              <span class="eye-icon" onclick="viewEmployee('${employee.id}')"><i class="fas fa-eye"></i></span>
+              <span class="remove-icon" onclick="removeEmployee(this)"><i class="fas fa-trash"></i></span>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }, 1000);
+    }
+
+    function viewEmployee(id) {
+      const employee = employees.find(emp => emp.id === id);
+      if (employee) {
+        document.getElementById('viewProfilePic').src = employee.profilePic;
+        document.getElementById('viewEmployeeId').textContent = employee.id;
+        document.getElementById('viewEmployeeName').textContent = employee.name;
+        document.getElementById('viewEmployeeDepartment').textContent = employee.department;
+        document.getElementById('viewEmployeeDesignation').textContent = employee.designation;
+        document.getElementById('viewEmployeeSalary').textContent = `₹ ${employee.salary.toLocaleString('en-IN')}`;
+        document.getElementById('viewEmployeeHireDate').textContent = new Date(employee.hireDate).toLocaleDateString('en-IN');
+
+        const modal = new bootstrap.Modal(document.getElementById('viewEmployeeModal'));
+        modal.show();
+      }
+    }
+
+    function addEmployee() {
+      const id = document.getElementById('employeeId').value;
+      const name = document.getElementById('employeeName').value.trim();
+      const department = document.getElementById('employeeDepartment').value;
+      const designation = document.getElementById('employeeDesignation').value;
+      const salary = parseFloat(document.getElementById('employeeSalary').value);
+      const hireDate = document.getElementById('employeeHireDate').value;
+      const profilePicInput = document.getElementById('employeeProfilePic');
+      let profilePic = 'https://randomuser.me/api/portraits/lego/1.jpg';
+
+      if (profilePicInput.files && profilePicInput.files[0]) {
+        profilePic = URL.createObjectURL(profilePicInput.files[0]);
+      }
+
+      if (id && name && department && designation && !isNaN(salary) && hireDate) {
+        employees.push({ id, name, department, designation, salary, hireDate, profilePic, type: 'non-teaching' });
+        saveEmployees();
+        filterEmployees();
+        document.getElementById('addEmployeeForm').reset();
+        document.getElementById('employeeId').value = '';
+        document.getElementById('profilePicPreview').style.display = 'none';
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addEmployeeModal'));
+        modal.hide();
+      } else {
+        alert('Please fill all required fields correctly.');
+      }
+    }
+
+    function removeEmployee(element) {
+      if (confirm('Are you sure you want to remove this employee?')) {
+        const row = element.closest('tr');
+        const id = row.cells[0].textContent;
+        employees = employees.filter(employee => employee.id !== id);
+        saveEmployees();
+        filterEmployees();
+      }
+    }
+
+    function downloadEmployees() {
+      const headers = ['Employee ID', 'Name', 'Department', 'Designation', 'Salary', 'Hire Date'];
+      const rows = employees.map(emp => [
+        emp.id,
+        emp.name,
+        emp.department,
+        emp.designation,
+        emp.salary,
+        new Date(emp.hireDate).toLocaleDateString('en-IN')
+      ]);
+
+      let csvContent = 'data:text/csv;charset=utf-8,' + headers.join(',') + '\n' + rows.map(row => row.join(',')).join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'non_teaching_employees.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function initializeProfilePicPreview() {
+      document.getElementById('employeeProfilePic').addEventListener('change', function(e) {
+        const preview = document.getElementById('profilePicPreview');
+        if (e.target.files && e.target.files[0]) {
+          preview.src = URL.createObjectURL(e.target.files[0]);
+          preview.style.display = 'block';
+        } else {
+          preview.style.display = 'none';
+        }
+      });
+    }
+
+    function initializeModal() {
+      document.getElementById('addEmployeeModal').addEventListener('show.bs.modal', () => {
+        document.getElementById('employeeId').value = generateEmployeeId();
+      });
+    }
+
+    function initializeThemeToggle() {
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const icon = document.getElementById('theme-toggle');
+        icon.classList.toggle('fa-moon');
+        icon.classList.toggle('fa-sun');
+      });
+    }
+
+    function initializeAdminActions() {
+      document.getElementById('profile-link').addEventListener('click', () => {
+        alert('Navigating to Profile...');
+      });
+      document.getElementById('settings-link').addEventListener('click', () => {
+        alert('Opening Settings...');
+      });
+      document.getElementById('logout-link').addEventListener('click', () => {
+        alert('Logging out...');
+      });
+    }
+
+    function initializeEventListeners() {
+      document.getElementById('searchInput').addEventListener('input', filterEmployees);
+      document.getElementById('departmentFilter').addEventListener('change', filterEmployees);
+      document.getElementById('designationFilter').addEventListener('change', filterEmployees);
+    }
+
+    function init() {
+      initializeStorage();
+      initializeDropdowns();
+      initializeDatePicker();
+      initializeSidebar();
+      initializeProfilePicPreview();
+      initializeModal();
+      initializeEventListeners();
+      initializeThemeToggle();
+      initializeAdminActions();
+      filterEmployees();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
