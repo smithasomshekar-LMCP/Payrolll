@@ -216,6 +216,16 @@ body.dark-mode .card {
   padding: 1.5rem;
 }
 
+.card-body p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+body.dark-mode .card-body p {
+  color: var(--text-dark);
+}
+
 .card-icon {
   font-size: 2rem;
   margin-bottom: 0.5rem;
@@ -245,7 +255,7 @@ body.dark-mode .card {
 
 /* Flatpickr Styles */
 .flatpickr-calendar {
-  background:校区 var(--accent-bg);
+  background: var(--accent-bg);
   box-shadow: var(--card-shadow);
   border-radius: 8px;
 }
@@ -377,3 +387,4 @@ body.dark-mode .flatpickr-day:hover {
     display: block;
   }
 }
+

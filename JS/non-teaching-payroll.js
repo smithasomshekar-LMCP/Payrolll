@@ -1,5 +1,4 @@
-
-  // Configuration for roles and storage key
+// Configuration for roles and storage key
   const config = {
     storageKey: 'nonTeachingEmployees',
     roleMapping: {
@@ -13,7 +12,7 @@
     defaultRoleOptions: [
       { value: 'all', label: 'All Roles' },
       { value: 'administrative', label: 'Administrative' },
-      { value: 'support_staff', label: 'Support Staff' }
+      { value: 'support_staff', label: 'Support Staff' },
     ]
   };
 
@@ -78,9 +77,10 @@
       const updatedEmployees = employees.filter(emp => emp.id !== id);
       saveEmployees(updatedEmployees);
       const role = document.getElementById('roleFilter')?.value || 'all';
-      const date = document.getElementById('dateFilter')?.value || null;
-      fetchPayrollData(role, date);
-      renderPayrollChart();
+      const month = document.getElementById('monthFilter')?.value || '';
+      const year = document.getElementById('yearFilter')?.value || '';
+      fetchPayrollData(role, month, year);
+      renderPayrollChart(role, month, year);
     } catch (error) {
       console.error('Error deleting employee:', error);
       alert('Failed to delete employee');
@@ -88,7 +88,7 @@
   }
 
   // Calculate payroll data from employee data
-  function calculatePayrollData(employees, role = 'all', date = null) {
+  function calculatePayrollData(employees, role = 'all', month = '', year = '') {
     try {
       // Validate and filter employees
       let filteredEmployees = employees.filter(emp => {
@@ -115,21 +115,24 @@
         });
       }
 
-      // Filter by date
-      if (date) {
-        const [year, month] = date.split('-').map(Number);
-        if (isNaN(year) || isNaN(month)) {
-          console.warn(`Invalid date format: ${date}`);
-          return filteredEmployees;
-        }
-        const filterDate = new Date(year, month - 1, 0); // Last day of previous month
+      // Filter by month and year
+      if (month || year) {
         filteredEmployees = filteredEmployees.filter(emp => {
           const hireDate = safeParseDate(emp.hireDate);
           if (!hireDate) {
             console.warn(`Invalid hireDate for employee ${emp.id}: ${emp.hireDate}`);
             return false;
           }
-          return hireDate <= filterDate;
+          const hireMonth = hireDate.getMonth() + 1; // Months are 0-based
+          const hireYear = hireDate.getFullYear();
+          if (month && year) {
+            return hireMonth === parseInt(month) && hireYear <= parseInt(year);
+          } else if (month) {
+            return hireMonth === parseInt(month);
+          } else if (year) {
+            return hireYear <= parseInt(year);
+          }
+          return true;
         });
       }
 
@@ -188,7 +191,7 @@
   }
 
   // Fetch and update payroll data
-  async function fetchPayrollData(role = 'all', date = null) {
+  async function fetchPayrollData(role = 'all', month = '', year = '') {
     showLoading();
     try {
       const employees = getEmployees();
@@ -201,7 +204,7 @@
         return;
       }
 
-      const payrollData = calculatePayrollData(employees, role, date);
+      const payrollData = calculatePayrollData(employees, role, month, year);
 
       // Render table
       const tbody = document.querySelector('#payrollTable tbody');
@@ -285,10 +288,10 @@
 
   // Render payroll summary chart
   let payrollChart;
-  async function renderPayrollChart() {
+  async function renderPayrollChart(role = 'all', month = '', year = '') {
     try {
       const employees = getEmployees();
-      const payrollData = calculatePayrollData(employees);
+      const payrollData = calculatePayrollData(employees, role, month, year);
       const summaryData = calculateSummary(payrollData);
 
       const rootStyles = getComputedStyle(document.documentElement);
@@ -305,14 +308,18 @@
         return;
       }
 
+      const labels = role === 'all' ? ['Administrative', 'Support Staff'] : [role === 'administrative' ? 'Administrative' : 'Support Staff'];
+      const data = role === 'all' ? [summaryData.administrative, summaryData.support_staff] : [summaryData[role]];
+      const backgroundColor = role === 'all' ? [primaryColor, secondaryColor] : [role === 'administrative' ? primaryColor : secondaryColor];
+
       payrollChart = new Chart(canvas, {
         type: 'bar',
         data: {
-          labels: ['Administrative', 'Support Staff'],
+          labels,
           datasets: [{
             label: 'Total Payroll (₹)',
-            data: [summaryData.administrative, summaryData.support_staff],
-            backgroundColor: [primaryColor, secondaryColor]
+            data,
+            backgroundColor
           }]
         },
         options: {
@@ -358,7 +365,10 @@
   document.getElementById('exportCsv')?.addEventListener('click', async () => {
     try {
       const employees = getEmployees();
-      const payrollData = calculatePayrollData(employees);
+      const role = document.getElementById('roleFilter')?.value || 'all';
+      const month = document.getElementById('monthFilter')?.value || '';
+      const year = document.getElementById('yearFilter')?.value || '';
+      const payrollData = calculatePayrollData(employees, role, month, year);
 
       const csv = [
         'Employee ID,Name,Role,Department,Designation,Gross Salary,Deductions,Net Pay,Hire Date',
@@ -391,23 +401,18 @@
     }
   }
 
-  // Initialize Flatpickr
-  function initializeDatePicker() {
-    const dateFilter = document.getElementById('dateFilter');
-    if (dateFilter) {
-      flatpickr('#dateFilter', {
-        dateFormat: 'Y-m',
-        altInput: true,
-        altFormat: 'F Y',
-        mode: 'single',
-        static: true,
-        onChange: (selectedDates, dateStr) => {
-          const role = document.getElementById('roleFilter')?.value || 'all';
-          fetchPayrollData(role, dateStr);
-        }
-      });
+  // Initialize year filter dropdown
+  function initializeYearFilter() {
+    const yearFilter = document.getElementById('yearFilter');
+    if (yearFilter) {
+      const currentYear = new Date().getFullYear();
+      const years = [''];
+      for (let i = currentYear; i >= currentYear - 10; i--) {
+        years.push(i.toString());
+      }
+      yearFilter.innerHTML = years.map(year => `<option value="${year}">${year || 'All Years'}</option>`).join('');
     } else {
-      console.error('Date filter element not found');
+      console.error('Year filter element not found');
     }
   }
 
@@ -445,8 +450,10 @@
   if (searchInput) {
     searchInput.addEventListener('input', () => {
       const role = document.getElementById('roleFilter')?.value || 'all';
-      const date = document.getElementById('dateFilter')?.value || null;
-      fetchPayrollData(role, date);
+      const month = document.getElementById('monthFilter')?.value || '';
+      const year = document.getElementById('yearFilter')?.value || '';
+      fetchPayrollData(role, month, year);
+      renderPayrollChart(role, month, year);
     });
   }
 
@@ -454,8 +461,32 @@
   if (roleFilter) {
     roleFilter.addEventListener('change', (e) => {
       const role = e.target.value;
-      const date = document.getElementById('dateFilter')?.value || null;
-      fetchPayrollData(role, date);
+      const month = document.getElementById('monthFilter')?.value || '';
+      const year = document.getElementById('yearFilter')?.value || '';
+      fetchPayrollData(role, month, year);
+      renderPayrollChart(role, month, year);
+    });
+  }
+
+  const monthFilter = document.getElementById('monthFilter');
+  if (monthFilter) {
+    monthFilter.addEventListener('change', (e) => {
+      const role = document.getElementById('roleFilter')?.value || 'all';
+      const month = e.target.value;
+      const year = document.getElementById('yearFilter')?.value || '';
+      fetchPayrollData(role, month, year);
+      renderPayrollChart(role, month, year);
+    });
+  }
+
+  const yearFilter = document.getElementById('yearFilter');
+  if (yearFilter) {
+    yearFilter.addEventListener('change', (e) => {
+      const role = document.getElementById('roleFilter')?.value || 'all';
+      const month = document.getElementById('monthFilter')?.value || '';
+      const year = e.target.value;
+      fetchPayrollData(role, month, year);
+      renderPayrollChart(role, month, year);
     });
   }
 
@@ -484,7 +515,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     try {
       initializeRoleFilter();
-      initializeDatePicker();
+      initializeYearFilter();
       fetchPayrollData();
       renderPayrollChart();
     } catch (error) {

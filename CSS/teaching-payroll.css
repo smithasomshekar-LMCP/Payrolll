@@ -262,78 +262,80 @@
     }
 
     /* Filter Box */
-    .filter-box {
-      background: var(--accent-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: var(--card-shadow);
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
+    /* Filter Box */
+.filter-box {
+  background: var(--accent-bg);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
 
-    body.dark-mode .filter-box {
-      background-color: #34495e;
-    }
+body.dark-mode .filter-box {
+  background-color: #34495e;
+}
 
-    .filter-box .filter-group {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+.filter-box .filter-group {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
 
-    .filter-box select,
-    .filter-box input[type="text"] {
-      border-radius: 20px;
-      font-size: 0.9rem;
-      padding: 8px 20px;
-      border: 1px solid #dee2e6;
-      transition: var(--transition);
-      min-width: 120px;
-      max-width: 200px;
-    }
+.filter-box select,
+.filter-box input[type="text"] {
+  border-radius: 20px;
+  font-size: 0.9rem;
+  padding: 8px 20px;
+  border: 1px solid #dee2e6;
+  transition: var(--transition);
+  min-width: 120px;
+  max-width: 200px;
+}
 
-    .filter-box select {
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l-6-6h12z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.75rem center;
-      background-size: 12px;
-    }
+.filter-box select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l-6-6h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px;
+}
 
-    .filter-box select:focus,
-    .filter-box input[type="text"]:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 0.2rem rgba(78, 149, 217, 0.25);
-      background-color: white;
-    }
+.filter-box select:focus,
+.filter-box input[type="text"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(78, 149, 217, 0.25);
+  background-color: white;
+}
 
-    body.dark-mode .filter-box select,
-    body.dark-mode .filter-box input[type="text"] {
-      background-color: #3a3a4e;
-      color: var(--text-dark);
-      border-color: #4b627a;
-    }
+body.dark-mode .filter-box select,
+body.dark-mode .filter-box input[type="text"] {
+  background-color: #3a3a4e;
+  color: var(--text-dark);
+  border-color: #4b627a;
+}
 
-    .btn-purple {
-      background-color: var(--primary-color);
-      color: var(--text-dark);
-      border-radius: 20px;
-      padding: 8px 16px;
-      border: none;
-      transition: var(--transition);
-      font-weight: 500;
-    }
+.btn-purple {
+  background-color: var(--primary-color);
+  color: var(--text-dark);
+  border-radius: 20px;
+  padding: 8px 16px;
+  border: none;
+  transition: var(--transition);
+  font-weight: 500;
+  white-space: nowrap;
+}
 
-    .btn-purple:hover {
-      background-color: #3B7ABF;
-      transform: translateY(-2px);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
+.btn-purple:hover {
+  background-color: #3B7ABF;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 
     /* Cards */
     .card {

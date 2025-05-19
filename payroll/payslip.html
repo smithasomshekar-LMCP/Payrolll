@@ -8,7 +8,6 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="../CSS/payslip.css">
-
 </head>
 <body>
   <div class="container-fluid">
@@ -17,10 +16,9 @@
       <div class="col-md-2 sidebar">
         <h5 class="text-center">LAMINCAP <span style="color: var(--primary-color);">X</span> PAYROLL</h5>
         <div class="nav-item">
-          <a href="dashboard.html" >
+          <a href="dashboard.html">
             <i class="fas fa-tachometer-alt"></i> Dashboard
           </a>
-          
         </div>
         <div class="nav-item">
           <a href="teachingstaff.html" data-bs-toggle="collapse" data-bs-target="#teaching-menu">
@@ -41,9 +39,9 @@
           </div>
         </div>
         <div class="nav-item">
-                <a href="payslip.html" class="active">
-                  <i class="fas fa-file-invoice"></i> Payslip
-                </a>
+          <a href="payslip.html" class="active">
+            <i class="fas fa-file-invoice"></i> Payslip
+          </a>
         </div>
       </div>
 
@@ -54,7 +52,7 @@
             <button class="menu-toggle"><i class="fas fa-bars"></i></button>
           </div>
           <div class="d-flex align-items-center gap-3">
-            <i class="fas fa-bell theme-toggle" title="Notifications"></i>
+            
             <i class="fas fa-moon theme-toggle" id="theme-toggle" title="Toggle Theme"></i>
             <div class="profile-section" data-bs-toggle="dropdown">
               <img src="https://randomuser.me/api/portraits/women/44.jpg" class="profile-img" alt="Profile" />
@@ -69,7 +67,8 @@
 
         <div class="p-4">
           <div class="alert-container" id="alertContainer" style="display: none;"></div>
-          <div class="d-flex gap-2 mb-3">
+          <div class="select-bar-container">
+            <label for="employeeSelect" class="form-label">Payslip for the month:</label>
             <select class="form-select employee-select" id="employeeSelect">
               <option value="">Select Employee</option>
             </select>
@@ -83,59 +82,74 @@
             <div class="api-error" id="payslipError" style="display: none;"></div>
             <div id="payslipContent">
               <div class="payslip-header text-center mb-4">
-                <h4 class="mb-0">LAMINCAP X PAYROLL</h4>
-                <small>123 Payroll Street, Tech City, Country</small>
+                <div>  </div>
+                <h4 class="mb-0">LAMINCAP Payroll</h4>
+                <small>City, Pin code</small>
+                <small>INDIA</small>
               </div>
 
-              <div class="row mb-4">
-                <div class="col-md-6 mb-3 mb-md-0">
-                  <strong>Employee Name:</strong> <span id="empName"></span><br>
-                  <strong>Employee ID:</strong> <span id="empId"></span>
-                </div>
-                <div class="col-md-6">
-                  <strong>Pay Period:</strong> <span id="payPeriod"></span><br>
-                  <strong>Worked Days:</strong> <span id="workedDays"></span>
+              <div class="summary-section">
+                <h6 class="fw-bold">Employee Summary</h6>
+                <div class="row mb-4">
+                  <div class="col-md-6 mb-3 mb-md-0">
+                    <strong>Employee Name:</strong> <span id="empName"></span><br>
+                    <strong>Pay Period:</strong> <span id="payPeriod"></span>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Employee ID:</strong> <span id="empId"></span><br>
+                    <strong>Paid days:</strong> <span id="workedDays"></span>
+                  </div>
                 </div>
               </div>
 
-              <div class="row">
-                <div class="col-md-6 mb-3 mb-md-0">
-                  <h6>Income</h6>
-                  <table class="table table-bordered" id="incomeTable">
-                    <thead>
-                      <tr>
-                        <th>Earnings</th>
-                        <th>Amount (₹)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr><td>Basic</td><td id="basic"></td></tr>
-                      <tr><td>HRA</td><td id="hra"></td></tr>
-                      <tr><td>DA</td><td id="da"></td></tr>
-                    </tbody>
-                  </table>
-                </div>
+              <div class="income-details">
+                <h6 class="fw-bold">Income Details</h6>
+                <div class="row">
+                  <div class="col-md-6 mb-3 mb-md-0">
+                    <table class="table table-bordered" id="incomeTable">
+                      <thead>
+                        <tr>
+                          <th>Earnings</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>Basic</td><td id="basic"></td></tr>
+                        <tr><td>HRA</td><td id="hra"></td></tr>
+                        <tr><td>DA</td><td id="da"></td></tr>
+                        <tr><td>SPP</td><td id="spp"></td></tr>
+                        <tr><td>OA</td><td id="oa"></td></tr>
+                        <tr class="fw-bold"><td>Gross Earnings</td><td id="grossEarnings"></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-                <div class="col-md-6">
-                  <h6>Deductions</h6>
-                  <table class="table table-bordered" id="deductionTable">
-                    <thead>
-                      <tr>
-                        <th>Deductions</th>
-                        <th>Amount (₹)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr><td>LOP</td><td id="lop"></td></tr>
-                      <tr><td>Tax</td><td id="tax"></td></tr>
-                      <tr><td>EPF</td><td id="epf"></td></tr>
-                    </tbody>
-                  </table>
+                  <div class="col-md-6">
+                    <table class="table table-bordered" id="deductionTable">
+                      <thead>
+                        <tr>
+                          <th>Deductions</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>LOP Days</td><td id="lop"></td></tr>
+                        <tr><td>Bus Fee</td><td id="busFee"></td></tr>
+                        <tr><td>SA</td><td id="sa"></td></tr>
+                        <tr><td>LN</td><td id="ln"></td></tr>
+                        <tr><td>PT</td><td id="pt"></td></tr>
+                        <tr><td>IT</td><td id="it"></td></tr>
+                        <tr><td>EFF</td><td id="eff"></td></tr>
+                        <tr><td>ESI</td><td id="esi"></td></tr>
+                        <tr class="fw-bold"><td>Total Deduction</td><td id="totalDeduction"></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
 
               <div class="text-end mt-3">
-                <h5><strong>Net Payable: ₹ <span id="netPay"></span></strong></h5>
+                <h5 class="total-net-payable"><strong>Total Net Payable (Gross Earnings - Total Deduction): ₹ <span id="netPay"></span></strong></h5>
                 <button class="btn btn-purple mt-2" id="downloadPdfBtn">Download PDF</button>
                 <button class="btn btn-secondary mt-2" id="backBtn">Back</button>
               </div>
@@ -179,12 +193,24 @@
               <div class="error-message" id="designationError"></div>
             </div>
             <div class="mb-3">
-              <label for="inputPeriod" class="form-label">Pay Period</label>
-              <input type="text" class="form-control" id="inputPeriod" required>
-              <div class="error-message" id="periodError"></div>
+              <label class="form-label">Pay Period</label>
+              <div class="period-select-group">
+                <select class="form-select" id="inputPeriodDate" required>
+                  <option value="">Select Date</option>
+                </select>
+                <select class="form-select" id="inputPeriodMonth" required>
+                  <option value="">Select Month</option>
+                </select>
+                <select class="form-select" id="inputPeriodYear" required>
+                  <option value="">Select Year</option>
+                </select>
+              </div>
+              <div class="error-message" id="periodDateError"></div>
+              <div class="error-message" id="periodMonthError"></div>
+              <div class="error-message" id="periodYearError"></div>
             </div>
             <div class="mb-3">
-              <label for="inputDays" class="form-label">Worked Days</label>
+              <label for="inputDays" class="form-label">Paid Days</label>
               <input type="text" class="form-control" id="inputDays" required>
               <div class="error-message" id="daysError"></div>
             </div>
@@ -204,19 +230,54 @@
               <div class="error-message" id="daError"></div>
             </div>
             <div class="mb-3">
-              <label for="inputLop" class="form-label">LOP (₹)</label>
+              <label for="inputSpp" class="form-label">SPP (₹)</label>
+              <input type="number" class="form-control" id="inputSpp" required min="0">
+              <div class="error-message" id="sppError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputOa" class="form-label">OA (₹)</label>
+              <input type="number" class="form-control" id="inputOa" required min="0">
+              <div class="error-message" id="oaError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputLop" class="form-label">LOP Days (₹)</label>
               <input type="number" class="form-control" id="inputLop" required min="0">
               <div class="error-message" id="lopError"></div>
             </div>
             <div class="mb-3">
-              <label for="inputTax" class="form-label">Tax (₹)</label>
-              <input type="number" class="form-control" id="inputTax" required min="0">
-              <div class="error-message" id="taxError"></div>
+              <label for="inputBusFee" class="form-label">Bus Fee (₹)</label>
+              <input type="number" class="form-control" id="inputBusFee" required min="0">
+              <div class="error-message" id="busFeeError"></div>
             </div>
             <div class="mb-3">
-              <label for="inputEpf" class="form-label">EPF (₹)</label>
-              <input type="number" class="form-control" id="inputEpf" required min="0">
-              <div class="error-message" id="epfError"></div>
+              <label for="inputSa" class="form-label">SA (₹)</label>
+              <input type="number" class="form-control" id="inputSa" required min="0">
+              <div class="error-message" id="saError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputLn" class="form-label">LN (₹)</label>
+              <input type="number" class="form-control" id="inputLn" required min="0">
+              <div class="error-message" id="lnError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputPt" class="form-label">PT (₹)</label>
+              <input type="number" class="form-control" id="inputPt" required min="0">
+              <div class="error-message" id="ptError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputIt" class="form-label">IT (₹)</label>
+              <input type="number" class="form-control" id="inputIt" required min="0">
+              <div class="error-message" id="itError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputEff" class="form-label">EFF (₹)</label>
+              <input type="number" class="form-control" id="inputEff" required min="0">
+              <div class="error-message" id="effError"></div>
+            </div>
+            <div class="mb-3">
+              <label for="inputEsi" class="form-label">ESI (₹)</label>
+              <input type="number" class="form-control" id="inputEsi" required min="0">
+              <div class="error-message" id="esiError"></div>
             </div>
           </form>
         </div>
@@ -235,6 +296,5 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="../JS/payslip.js"></script>
-
 </body>
 </html>
